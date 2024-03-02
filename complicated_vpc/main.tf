@@ -25,12 +25,13 @@ resource "aws_vpc" "complicate_vpc" {
 }
 
 resource "aws_subnet" "public_subnet" {
-  vpc_id = aws_vpc.complicate_vpc.id
+  vpc_id            = aws_vpc.complicate_vpc.id
   availability_zone = "ap-northeast-2a"
-  cidr_block = "10.0.0.0/24"
-  tags = {
+  cidr_block        = "10.0.0.0/24"
+  tags              = {
     Name = "public_subnet"
   }
+  map_public_ip_on_launch = true
 }
 
 resource "aws_subnet" "private_subnet" {
@@ -103,17 +104,20 @@ resource "aws_instance" "bastion" {
   ami = "ami-0f3a440bbcff3d043"
   instance_type = "t2.micro"
   subnet_id = aws_subnet.public_subnet.id
+  security_groups = [aws_security_group.bastion_sg.id]
   tags = {
     Name = "bastion-instance"
   }
+  key_name = "diareat-ocr"
 }
 
 resource "aws_instance" "private_instance" {
   ami = "ami-0f3a440bbcff3d043"
   instance_type = "t2.micro"
   subnet_id = aws_subnet.private_subnet.id
+  security_groups = [aws_security_group.private_sg.id]
   tags = {
-    Name = "bastion-instance"
+    Name = "private-instance"
   }
 }
 
